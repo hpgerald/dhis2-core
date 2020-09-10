@@ -34,9 +34,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.hisp.dhis.dxf2.importsummary.ImportStatus.ERROR;
 import static org.hisp.dhis.dxf2.importsummary.ImportStatus.SUCCESS;
 import static org.hisp.dhis.dxf2.importsummary.ImportSummary.error;
-import static org.hisp.dhis.importexport.ImportStrategy.CREATE;
-import static org.hisp.dhis.importexport.ImportStrategy.DELETE;
-import static org.hisp.dhis.importexport.ImportStrategy.UPDATE;
+import static org.hisp.dhis.importexport.ImportStrategy.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +42,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hisp.dhis.dxf2.events.event.Event;
 import org.hisp.dhis.dxf2.events.event.persistence.EventPersistenceService;
@@ -59,6 +56,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableList;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -141,12 +140,9 @@ public class EventManager
         // pre-process events
         preInsertProcessorFactory.process( workContext, validEvents );
 
-        // @formatter:off
         importSummaries.addImportSummaries(
             // Run validation against the remaining "insertable" events //
-            insertValidationFactory.check( workContext, validEvents )
-        );
-        // @formatter:on
+            insertValidationFactory.check( workContext, validEvents ) );
 
         // collect the UIDs of events that did not pass validation
         final List<String> invalidEvents = importSummaries.getImportSummaries().stream()
@@ -203,12 +199,9 @@ public class EventManager
         // pre-process events
         preUpdateProcessorFactory.process( workContext, events );
 
-        // @formatter:off
         importSummaries.addImportSummaries(
             // Run validation against the remaining "updatable" events //
-            updateValidationFactory.check( workContext, events)
-        );
-        // @formatter:on
+            updateValidationFactory.check( workContext, events ) );
 
         // collect the UIDs of events that did not pass validation
         final List<String> eventValidationFailedUids = importSummaries.getImportSummaries().stream()
@@ -249,12 +242,9 @@ public class EventManager
     {
         final ImportSummaries importSummaries = new ImportSummaries();
 
-        // @formatter:off
         importSummaries.addImportSummaries(
             // Run validation against the remaining "insertable" events //
-            deleteValidationFactory.check( workContext, events )
-        );
-        // @formatter:on
+            deleteValidationFactory.check( workContext, events ) );
 
         // collect the UIDs of events that did not pass validation
         final List<String> eventValidationFailedUids = importSummaries.getImportSummaries().stream()
@@ -394,7 +384,7 @@ public class EventManager
                 }
                 else
                 {
-                    eventPersistenceService.delete( workContext, event );
+                    eventPersistenceService.delete( workContext, Collections.singletonList( event ) );
                 }
 
             }

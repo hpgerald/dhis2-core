@@ -44,7 +44,5 @@ public interface EventPersistenceService
 
     void update( WorkContext context, List<Event> events );
 
-    void delete( WorkContext context, Event event );
-
     void delete( WorkContext context, List<Event> events );
 }
